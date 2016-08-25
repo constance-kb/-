@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<style>
+body,ul,li,div,i{ margin:0; padding:0;}
+body{ background:#cc7a52;}
+.chessman{ position:absolute; left:50%; margin-left:-650px; top:50px;}
+.black,.white{ position:absolute; left:50px; top:0; border-radius:50%; box-shadow:2px 2px 8px #000; width:30px; height:30px;}
+.black{
+	background: -webkit-radial-gradient(#999, #222, #000); /* Safari 5.1 - 6.0 */
+	background: -o-radial-gradient(#999, #222, #000); /* Opera 11.6 - 12.0 */
+	background: -moz-radial-gradient(#999, #222, #000); /* Firefox 3.6 - 15 */
+	background: radial-gradient(#999, #222, #000); /* 标准的语法 */
+}
+.white{
+	background: -webkit-radial-gradient(#ccc, #eee, #fff); /* Safari 5.1 - 6.0 */
+	background: -o-radial-gradient(#ccc, #eee, #fff); /* Opera 11.6 - 12.0 */
+	background: -moz-radial-gradient(#ccc, #eee, #fff); /* Firefox 3.6 - 15 */
+	background: radial-gradient(#ccc, #eee, #fff); /* 标准的语法 */
+}
+.current{ position:absolute; font-style:normal; font-size:30px; line-height:30px;}
+.start{ position:absolute; width:80px; left: 10px; top:180px; background:#000; color:#fff; text-align:center; line-height:30px; font-size: 16px; font-weight:bold; cursor:pointer; border-radius:5px;  font-style:normal;}
+#chessBox{ width:1000px; margin:50px auto 0;}
+#chessBox ul{ overflow:hidden; width:100%; padding:0 3px 3px 0;}
+#chessBox li{ float:left; width:37px; height:37px; border:3px double #000; list-style:none; margin:0 -3px -3px 0;}
+</style>
+</head>
+
+<body>
+<div class="chessman">
+	<i id="current" class="current" style="top: 0px;">=》</i>
+	<i class="black" style=""></i>
+	<i class="white" style="top:80px;"></i>
+    <i class="start" onclick="window.location.reload();">重新开始</i>
+</div>
+
+<div id="chessBox">
+	<ul>
+    	
+    </ul>
+</div>
+
+<script>
+var chessBox=document.getElementById('chessBox');
+var chessBoxUl=chessBox.getElementsByTagName('ul')[0];
+var arr=[];//表示二维数组；对应棋盘的交点
+function chessBoxFun(rows){//rows表示我需要的行数
+	var cols=chessBox.clientWidth/40;//每一行有几个;//clientWidth节点的可视宽度
+	var frag=document.createDocumentFragment();//碎片
+	for(var i=0;i<rows;i++)
+	{
+		arr[i]=[];//定义一维数组的元素为数组
+		for(var j=0;j<cols;j++)
+		{
+            arr[j]=[];
+			arr[j][i]=false;
+            if(j==cols-1){
+                arr[cols]=[];
+                arr[cols][i]=false;
+            }
+			var li=document.createElement('li');
+			frag.appendChild(li);
+		}
+	}
+	chessBoxUl.appendChild(frag);
+}
+chessBoxFun(10);//创建棋盘
+
+var boolHei=true;//true表示先下黑子，flase表示下白子
+chessBox.onclick=function(e){
+	var event=window.event || e;
+	var bodyChessBoxPosX=chessBox.offsetLeft-3;//得到节点于父级的距离（position有关）
+	var bodyChessBoxPosY=chessBox.offsetTop-3;//棋盘左上角与页面的高度
+	var pageX=event.pageX;//鼠标的位置x
+	var pageY=event.pageY;//鼠标的位置y
+    var chessBoxWidth=chessBox.clientWidth;//棋盘的宽度
+    var chessBoxHeight=chessBox.clientHeight;//棋盘的高度
+	//console.log(bodyChessBoxPosX,bodyChessBoxPosY,pageX,pageY);
+    if(pageX<bodyChessBoxPosX||pageY<bodyChessBoxPosY||pageX>bodyChessBoxPosX+chessBoxWidth||pageY>bodyChessBoxPosY+chessBoxHeight){
+        return;
+    }
+    var pageChessBoxX=pageX-bodyChessBoxPosX;//鼠标相对棋盘的宽度
+    var pageChessBoxY=pageY-bodyChessBoxPosY;//鼠标相对棋盘的高度
+    //console.log(pageChessBoxX,pageChessBoxY);
+    var liWidth=40;
+    var x=Math.round(pageChessBoxX/liWidth);
+    var y=Math.round(pageChessBoxY/liWidth);
+    console.log(x,y);
+    if(arr[x][y]){
+        alert("此位置已有棋子，请换位子落子！");
+        return;
+    }
+    arr[x][y]=true;
+    var current=document.getElementById("current");
+    var span=document.createElement("span");
+    if(boolHei) {
+        span.className = "black";
+        boolHei = false;
+        current.style.top = "80px";
+    }
+    else{
+        span.className="white";
+        boolHei=true;
+        current.style.top="0";
+    }
+    span.setAttribute("style","position:absolute;left:"+(x*liWidth-15)+"px;top:"+(y*liWidth-15)+"px;");
+    chessBox.appendChild(span);
+}
+</script>
+</body>
+</html>
